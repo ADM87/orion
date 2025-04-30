@@ -11,9 +11,18 @@ var (
 	logger = logging.NewLogger()
 )
 
+func init() {
+	// Set default log level to error and fatal
+	logger.LogLvl(logging.LogLvlError | logging.LogLvlFatal)
+}
+
 // ======================================================================
 // Logging functions
 // ======================================================================
+
+func LogLvl(lvl int) {
+	logger.LogLvl(lvl)
+}
 
 func Debug(arg any) {
 	logger.Log(logging.LogLvlDebug, arg)
