@@ -1,32 +1,44 @@
 package main
 
 import (
-	"errors"
-
 	"github.com/ADM87/orion/system"
 	"github.com/ADM87/orion/system/logging"
+	"github.com/ADM87/orion/system/types"
 	"github.com/spf13/cobra"
 )
 
-var version = "0.0.0-unreleased"
+var (
+	VerboseArg = &types.BoolArg{
+		Arg:   &types.Arg{Name: "verbose", Description: "Enable verbose logging"},
+		Value: false,
+	}
+)
 
+var version = "0.0.0-unreleased"
 var root = &cobra.Command{
-	Use:   "orion",
-	Short: "Orion CLI",
+	Use:     "orion",
+	Short:   "Orion CLI",
+	Version: version,
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		verbose := cmd.Flag("verbose")
+		if verbose != nil && verbose.Value.String() == "true" {
+			system.LogLvl(logging.LogLvlAll)
+		}
+		return nil
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return errors.New("no command specified. Use --help for more information")
+		return cmd.Help()
 	},
 	SilenceErrors: true,
 	SilenceUsage:  true,
 }
 
 func init() {
-	root.Version = version
+	VerboseArg.PersistentRegisterWithCmd(root)
 }
 
 func main() {
-	system.LogLvl(logging.LogLvlDebug | logging.LogLvlInfo | logging.LogLvlWarn | logging.LogLvlError | logging.LogLvlFatal)
 	if err := root.Execute(); err != nil {
-		system.Debug(err)
+		system.Fatal(err)
 	}
 }
