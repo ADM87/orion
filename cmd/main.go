@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/ADM87/orion/system"
+	"github.com/ADM87/orion/system/logging"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +14,7 @@ var root = &cobra.Command{
 	Use:   "orion",
 	Short: "Orion CLI",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return errors.New("no command specified")
+		return errors.New("no command specified. Use --help for more information")
 	},
 	SilenceErrors: true,
 	SilenceUsage:  true,
@@ -24,7 +25,8 @@ func init() {
 }
 
 func main() {
+	system.LogLvl(logging.LogLvlDebug | logging.LogLvlInfo | logging.LogLvlWarn | logging.LogLvlError | logging.LogLvlFatal)
 	if err := root.Execute(); err != nil {
-		system.Fatal(err)
+		system.Debug(err)
 	}
 }
