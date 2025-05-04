@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ADM87/orion/cmd/ops"
+	"github.com/ADM87/orion/cmd/op"
 	"github.com/ADM87/orion/system"
 	"github.com/ADM87/orion/system/logging"
 	"github.com/ADM87/orion/system/types"
@@ -37,7 +37,7 @@ var root = &cobra.Command{
 func init() {
 	VerboseArg.PersistentRegisterWithCmd(root)
 
-	root.AddCommand(ops.InitCmd)
+	root.AddCommand(op.InitCmd)
 }
 
 func main() {

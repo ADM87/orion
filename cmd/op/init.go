@@ -1,6 +1,10 @@
-package ops
+package op
 
 import (
+	"fmt"
+
+	"github.com/ADM87/orion/system"
+	"github.com/ADM87/orion/system/templating"
 	"github.com/ADM87/orion/system/types"
 	"github.com/spf13/cobra"
 )
@@ -10,7 +14,7 @@ var (
 		Arg: &types.Arg{Name: "path", Description: "Path to initialize the new resource in"},
 	}
 	SpecArg = &types.StringArg{
-		Arg:   &types.Arg{Name: "spec", Short: "s", Description: "Path to the resource spec file (spec.yaml)"},
+		Arg:   &types.Arg{Name: "spec", Short: "s", Description: fmt.Sprintf("Path to the resource spec file (%s)", templating.TemplatingSpecFileName)},
 		Value: "spec.yaml",
 	}
 	NoPromptArg = &types.BoolArg{
@@ -22,7 +26,15 @@ var InitCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize a new resource",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return cmd.Help()
+		spec, err := system.MakeAbsolute(SpecArg.Value)
+		if err != nil {
+			return err
+		}
+
+		if _, err := system.LoadTemplateSpec(spec); err != nil {
+			return err
+		}
+		return nil
 	},
 	SilenceErrors: true,
 	SilenceUsage:  true,

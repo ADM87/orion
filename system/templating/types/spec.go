@@ -1,4 +1,4 @@
-package templating
+package types
 
 type SpecYaml struct {
 	TemplatePaths []string       `yaml:"templates"`
