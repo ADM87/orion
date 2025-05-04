@@ -37,7 +37,7 @@ var root = &cobra.Command{
 func init() {
 	VerboseArg.PersistentRegisterWithCmd(root)
 
-	root.AddCommand(ops.NewCmd)
+	root.AddCommand(ops.InitCmd)
 }
 
 func main() {
