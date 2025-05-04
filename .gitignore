@@ -11,5 +11,8 @@
 !cmd/
 !cmd/**/*
 
+!plugins/
+!plugins/**/*
+
 !system/
 !system/**/*
