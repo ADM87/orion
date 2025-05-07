@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	TemplatingSpecFileName = "spec.yaml"
+	TemplatingSpecFileName = "spec.yaml" // Default spec file name with extension
+	TemplatingSpecFileExt  = ".yaml"     // Spec file extension
 )
 
 var (
@@ -21,10 +22,9 @@ var (
 )
 
 type ITemplateResolver interface {
-	GetTemplatePaths() []string
-	GetValues() map[string]any
-
-	LoadSpec(path string) error
+	GetTemplatePaths() []string // GetTemplatePaths returns the template paths from the spec file
+	GetValues() map[string]any  // GetValues returns the values from the spec file
+	LoadSpec(path string) error // LoadSpec loads the spec file from the given path
 }
 
 type templateResolver struct {
@@ -55,7 +55,7 @@ func (tr *templateResolver) LoadSpec(path string) error {
 	if err != nil {
 		return errors.Join(ErrUnableToReadSpec, err)
 	}
-
+	println(string(data))
 	if err := yaml.Unmarshal(data, tr); err != nil {
 		return errors.Join(ErrUnableToParseSpec, err)
 	}
@@ -85,13 +85,19 @@ func resolveSpecPath(path string) (string, error) {
 func resolveTemplatePaths(base string, paths []string) ([]string, error) {
 	var resolved []string
 	for _, path := range paths {
-		p := filepath.Clean(filepath.Join(filepath.Dir(base), path))
-		if filepath.Base(p) != "*" {
-			resolved = append(resolved, p)
+		cleanedPath := filepath.Clean(filepath.Join(filepath.Dir(base), path))
+
+		info, err := os.Stat(cleanedPath)
+		if err != nil {
+			return nil, err
+		}
+
+		if info.IsDir() || filepath.Base(cleanedPath) != "*" {
+			resolved = append(resolved, cleanedPath)
 			continue
 		}
 
-		collectedPaths, err := resolveWildcardPath(p)
+		collectedPaths, err := resolveWildcardPath(filepath.Dir(cleanedPath))
 		if err != nil {
 			return nil, err
 		}
@@ -103,12 +109,12 @@ func resolveTemplatePaths(base string, paths []string) ([]string, error) {
 
 func resolveWildcardPath(path string) ([]string, error) {
 	var paths []string
-	return paths, filepath.WalkDir(path, func(p string, d os.DirEntry, err error) error {
+	return paths, filepath.WalkDir(path, func(current string, entry os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		if !d.IsDir() {
-			paths = append(paths, p)
+		if !entry.IsDir() && filepath.Ext(current) == TemplatingSpecFileExt {
+			paths = append(paths, current)
 		}
 		return nil
 	})

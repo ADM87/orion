@@ -31,8 +31,16 @@ var InitCmd = &cobra.Command{
 			return err
 		}
 
-		if _, err := system.LoadTemplateSpec(spec); err != nil {
+		if r, err := system.LoadTemplateSpec(spec); err != nil {
 			return err
+		} else {
+			for _, path := range r.GetTemplatePaths() {
+				if absPath, err := system.MakeAbsolute(path); err != nil {
+					return err
+				} else {
+					fmt.Println(absPath)
+				}
+			}
 		}
 		return nil
 	},
