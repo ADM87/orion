@@ -11,8 +11,8 @@
 !cmd/
 !cmd/**/*
 
-!plugins/
-!plugins/**/*
+!models/
+!models/**/*
 
 !system/
 !system/**/*
