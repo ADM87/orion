@@ -2,17 +2,10 @@ package main
 
 import (
 	"github.com/ADM87/orion/cmd/op"
+	"github.com/ADM87/orion/models"
 	"github.com/ADM87/orion/system"
 	"github.com/ADM87/orion/system/logging"
-	"github.com/ADM87/orion/system/types"
 	"github.com/spf13/cobra"
-)
-
-var (
-	VerboseArg = &types.BoolArg{
-		Arg:   &types.Arg{Name: "verbose", Description: "Enable verbose logging"},
-		Value: false,
-	}
 )
 
 var version = "0.0.0-unreleased"
@@ -35,7 +28,7 @@ var root = &cobra.Command{
 }
 
 func init() {
-	VerboseArg.PersistentRegisterWithCmd(root)
+	models.VerboseArg.PersistentRegisterWithCmd(root)
 
 	root.AddCommand(op.InitCmd)
 }
