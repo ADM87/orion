@@ -6,12 +6,10 @@ import (
 	"path/filepath"
 
 	"github.com/ADM87/orion/system/logging"
-	"github.com/ADM87/orion/system/templating"
 )
 
 var (
-	logger           = logging.NewLogger()
-	templateResolver = templating.NewTemplateResolver()
+	logger = logging.NewLogger()
 )
 
 func init() {
@@ -33,15 +31,6 @@ func MakeAbsolute(path string) (string, error) {
 		return "", err
 	}
 	return absPath, nil
-}
-
-// ======================================================================
-// Templating functions
-// ======================================================================
-
-// LoadTemplateSpec loads the template spec file into a template resolver and returns it
-func LoadTemplateSpec(path string) (templating.ITemplateResolver, error) {
-	return templateResolver, templateResolver.LoadSpec(path)
 }
 
 // ======================================================================
