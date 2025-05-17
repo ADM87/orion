@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
@@ -12,6 +14,8 @@ type CmdArg[T any] interface {
 
 	AddFlag(cmd *cobra.Command)
 	AddPersistentFlag(cmd *cobra.Command)
+
+	Validate(cmd *cobra.Command) error
 }
 
 type cmdarg[T any] struct {
@@ -61,6 +65,13 @@ func (c *cmdarg[T]) AddPersistentFlag(cmd *cobra.Command) {
 	if c.required {
 		cmd.MarkPersistentFlagRequired(c.name)
 	}
+}
+
+func (c *cmdarg[T]) Validate(cmd *cobra.Command) error {
+	if c.required && cmd.Flags().Lookup(c.name).Value.String() == "" {
+		return fmt.Errorf("required flag %s is not set", c.name)
+	}
+	return nil
 }
 
 // ======================================================================
