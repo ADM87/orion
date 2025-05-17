@@ -11,8 +11,8 @@
 !cmd/
 !cmd/**/*
 
-!models/
-!models/**/*
+!pkg/
+!pkg/**/*
 
 !system/
 !system/**/*
