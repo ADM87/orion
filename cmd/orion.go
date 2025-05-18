@@ -1,22 +1,22 @@
 package cmds
 
 import (
-	cmdargs "github.com/ADM87/orion/cmd/args"
 	"github.com/ADM87/orion/system"
 	"github.com/spf13/cobra"
 )
 
 var orionCmd = &cobra.Command{
-	Use: "orion",
+	Use:   "orion",
+	Short: "Orion CLI",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		system.SetVerbose(cmdargs.Verbose.GetValue())
+		system.SetVerbose()
 	},
 	SilenceErrors: true,
 	SilenceUsage:  true,
 }
 
 func init() {
-	cmdargs.Verbose.AddPersistentFlag(orionCmd)
+	system.Verbose.AddTo(orionCmd.PersistentFlags().BoolVarP)
 }
 
 func Execute(version string) {

@@ -6,33 +6,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type CmdArg[T any] interface {
-	GetValue() T
-
-	GetName() string
-	GetShort() string
-	GetDescription() string
-
-	AddFlag(cmd *cobra.Command)
-	AddPersistentFlag(cmd *cobra.Command)
-
-	Validate(cmd *cobra.Command) error
-}
-
-type cmdarg[T any] struct {
-	name        string
-	short       string
-	description string
-	required    bool
-	value       T
-}
-
 type (
-	stringarg struct {
-		*cmdarg[string]
+	CmdArgReceiver[T any] func(value *T, name, short string, defaultValue T, description string)
+
+	CmdArg[T any] interface {
+		GetValue() T
+
+		GetName() string
+		GetShort() string
+		GetDescription() string
+
+		AddTo(receiver CmdArgReceiver[T])
+
+		Validate(cmd *cobra.Command) error
 	}
-	boolarg struct {
-		*cmdarg[bool]
+
+	cmdarg[T any] struct {
+		name        string
+		short       string
+		description string
+		required    bool
+		value       T
 	}
 )
 
@@ -56,16 +50,8 @@ func (c *cmdarg[T]) GetValue() T {
 	return c.value
 }
 
-func (c *cmdarg[T]) AddFlag(cmd *cobra.Command) {
-	if c.required {
-		cmd.MarkFlagRequired(c.name)
-	}
-}
-
-func (c *cmdarg[T]) AddPersistentFlag(cmd *cobra.Command) {
-	if c.required {
-		cmd.MarkPersistentFlagRequired(c.name)
-	}
+func (c *cmdarg[T]) AddTo(receiver CmdArgReceiver[T]) {
+	receiver(&c.value, c.name, c.short, c.value, c.description)
 }
 
 func (c *cmdarg[T]) Validate(cmd *cobra.Command) error {
@@ -79,25 +65,28 @@ func (c *cmdarg[T]) Validate(cmd *cobra.Command) error {
 // StringArg
 // ======================================================================
 
-func NewStringArg(name, short, description string, required bool) CmdArg[string] {
-	return &stringarg{
-		cmdarg: &cmdarg[string]{
-			name:        name,
-			short:       short,
-			description: description,
-			required:    required,
-		},
+func NewStringArg(name, short, description string, defaultValue string, required bool) CmdArg[string] {
+	return &cmdarg[string]{
+		name:        name,
+		short:       short,
+		description: description,
+		required:    required,
+		value:       defaultValue,
 	}
 }
 
-func (c *stringarg) AddFlag(cmd *cobra.Command) {
-	c.cmdarg.AddFlag(cmd)
-	cmd.Flags().StringVarP(&c.value, c.name, c.short, c.value, c.description)
-}
+// ======================================================================
+// StringSliceArg
+// ======================================================================
 
-func (c *stringarg) AddPersistentFlag(cmd *cobra.Command) {
-	c.cmdarg.AddPersistentFlag(cmd)
-	cmd.PersistentFlags().StringVarP(&c.value, c.name, c.short, c.value, c.description)
+func NewStringSliceArg(name, short, description string, defaultValue []string, required bool) CmdArg[[]string] {
+	return &cmdarg[[]string]{
+		name:        name,
+		short:       short,
+		description: description,
+		required:    required,
+		value:       defaultValue,
+	}
 }
 
 // ======================================================================
@@ -105,22 +94,11 @@ func (c *stringarg) AddPersistentFlag(cmd *cobra.Command) {
 // ======================================================================
 
 func NewBoolArg(name, short, description string, required bool) CmdArg[bool] {
-	return &boolarg{
-		cmdarg: &cmdarg[bool]{
-			name:        name,
-			short:       short,
-			description: description,
-			required:    required,
-		},
+	return &cmdarg[bool]{
+		name:        name,
+		short:       short,
+		description: description,
+		required:    required,
+		value:       false,
 	}
-}
-
-func (c *boolarg) AddFlag(cmd *cobra.Command) {
-	c.cmdarg.AddFlag(cmd)
-	cmd.Flags().BoolVarP(&c.value, c.name, c.short, c.value, c.description)
-}
-
-func (c *boolarg) AddPersistentFlag(cmd *cobra.Command) {
-	c.cmdarg.AddPersistentFlag(cmd)
-	cmd.PersistentFlags().BoolVarP(&c.value, c.name, c.short, c.value, c.description)
 }

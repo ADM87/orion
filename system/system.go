@@ -5,7 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
+	systemargs "github.com/ADM87/orion/system/args"
 	systemlog "github.com/ADM87/orion/system/log"
+)
+
+var (
+	Verbose = systemargs.NewBoolArg("verbose", "v", "Enable verbose logging", false)
 )
 
 var (
@@ -19,6 +24,11 @@ func init() {
 // ======================================================================
 // System functions
 // ======================================================================
+
+func Exit(code int) {
+	Debugf("Exiting with code %d", code)
+	os.Exit(code)
+}
 
 // MakeAbsolute takes a path and returns the absolute path. If the path is already absolute, it returns the same path.
 func MakeAbsolute(path string) (string, error) {
@@ -37,9 +47,9 @@ func MakeAbsolute(path string) (string, error) {
 // Logging functions
 // ======================================================================
 
-// SetLogFile sets the logging level for verbose logging
-func SetVerbose(verbose bool) {
-	if verbose {
+// SetVerbose sets the logging level based on the Verbose argument
+func SetVerbose() {
+	if Verbose.GetValue() {
 		logger.LogLvl(systemlog.LogLvlAll)
 	} else {
 		logger.LogLvl(systemlog.LogLvlError | systemlog.LogLvlFatal)
