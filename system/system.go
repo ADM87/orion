@@ -5,15 +5,15 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ADM87/orion/system/logging"
+	systemlog "github.com/ADM87/orion/system/log"
 )
 
 var (
-	logger = logging.NewLogger()
+	logger = systemlog.NewLogger()
 )
 
 func init() {
-	logger.LogLvl(logging.LogLvlError | logging.LogLvlFatal)
+	logger.LogLvl(systemlog.LogLvlError | systemlog.LogLvlFatal)
 }
 
 // ======================================================================
@@ -37,6 +37,15 @@ func MakeAbsolute(path string) (string, error) {
 // Logging functions
 // ======================================================================
 
+// SetLogFile sets the logging level for verbose logging
+func SetVerbose(verbose bool) {
+	if verbose {
+		logger.LogLvl(systemlog.LogLvlAll)
+	} else {
+		logger.LogLvl(systemlog.LogLvlError | systemlog.LogLvlFatal)
+	}
+}
+
 // LogLvl sets the logging level for the logger
 func LogLvl(lvl int) {
 	logger.LogLvl(lvl)
@@ -44,52 +53,52 @@ func LogLvl(lvl int) {
 
 // Debug logs debug level messages
 func Debug(arg any) {
-	logger.Log(logging.LogLvlDebug, arg)
+	logger.Log(systemlog.LogLvlDebug, arg)
 }
 
 // Debugf logs debug level messages with formatting
 func Debugf(format string, args any) {
-	logger.Log(logging.LogLvlDebug, fmt.Sprintf(format, args))
+	logger.Log(systemlog.LogLvlDebug, fmt.Sprintf(format, args))
 }
 
 // Info logs info level messages
 func Info(arg any) {
-	logger.Log(logging.LogLvlInfo, arg)
+	logger.Log(systemlog.LogLvlInfo, arg)
 }
 
 // Infof logs info level messages with formatting
 func Infof(format string, args any) {
-	logger.Log(logging.LogLvlInfo, fmt.Sprintf(format, args))
+	logger.Log(systemlog.LogLvlInfo, fmt.Sprintf(format, args))
 }
 
 // Warn logs warning level messages
 func Warn(arg any) {
-	logger.Log(logging.LogLvlWarn, arg)
+	logger.Log(systemlog.LogLvlWarn, arg)
 }
 
 // Warnf logs warning level messages with formatting
 func Warnf(format string, args any) {
-	logger.Log(logging.LogLvlWarn, fmt.Sprintf(format, args))
+	logger.Log(systemlog.LogLvlWarn, fmt.Sprintf(format, args))
 }
 
 // Error logs error level messages
 func Error(arg any) {
-	logger.Log(logging.LogLvlError, arg)
+	logger.Log(systemlog.LogLvlError, arg)
 }
 
 // Errorf logs error level messages with formatting
 func Errorf(format string, args any) {
-	logger.Log(logging.LogLvlError, fmt.Sprintf(format, args))
+	logger.Log(systemlog.LogLvlError, fmt.Sprintf(format, args))
 }
 
 // Fatal logs fatal level messages, which will also exit the program
 func Fatal(arg any) {
-	logger.Log(logging.LogLvlFatal, arg)
+	logger.Log(systemlog.LogLvlFatal, arg)
 	os.Exit(1)
 }
 
 // Fatalf logs fatal level messages with formatting, which will also exit the program
 func Fatalf(format string, args any) {
-	logger.Log(logging.LogLvlFatal, fmt.Sprintf(format, args))
+	logger.Log(systemlog.LogLvlFatal, fmt.Sprintf(format, args))
 	os.Exit(1)
 }

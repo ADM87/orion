@@ -1,4 +1,4 @@
-package logging
+package systemlog
 
 const (
 	LogLvlDebug = 1 << iota

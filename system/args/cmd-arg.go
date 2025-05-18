@@ -1,4 +1,4 @@
-package models
+package systemargs
 
 import (
 	"fmt"
@@ -7,10 +7,11 @@ import (
 )
 
 type CmdArg[T any] interface {
+	GetValue() T
+
 	GetName() string
 	GetShort() string
 	GetDescription() string
-	GetValue() T
 
 	AddFlag(cmd *cobra.Command)
 	AddPersistentFlag(cmd *cobra.Command)
